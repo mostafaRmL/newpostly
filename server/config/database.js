@@ -20,18 +20,10 @@ if (process.env.NODE_ENV !== 'production') {
 // Support both Railway's MYSQL_URL and individual connection parameters
 let pool;
 
-if (process.env.MYSQL_URL || process.env.DATABASE_URL) {
-  // Use Railway's connection URL if available
-  const connectionUrl = process.env.MYSQL_URL || process.env.DATABASE_URL;
-  pool = mysql.createPool({
-    uri: connectionUrl,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0,
-    enableKeepAlive: true,
-    keepAliveInitialDelay: 0
-  });
-  console.log('✅ Using DATABASE_URL for MySQL connection');
+if (process.env.MYSQL_URL) {
+  // Use Railway's connection URL if available (mysql2 supports connection string directly)
+  console.log('✅ Using MYSQL_URL for connection');
+  pool = mysql.createPool(process.env.MYSQL_URL + '?waitForConnections=true&connectionLimit=10&queueLimit=0');
 } else {
   // Fallback to individual parameters for local development
   pool = mysql.createPool({
