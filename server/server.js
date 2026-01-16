@@ -87,6 +87,51 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Database setup endpoint (temporary - remove after setup)
+app.get('/api/setup-database', async (req, res) => {
+  try {
+    const { setupDatabase } = require('./scripts/setup-schema');
+    const bcrypt = require('bcrypt');
+    
+    // Setup schema
+    await setupDatabase();
+    
+    // Create admin user
+    const hashedPassword = await bcrypt.hash('admin123', 10);
+    await require('./config/database').pool.execute(
+      `INSERT INTO users (username, email, password, role) 
+       VALUES (?, ?, ?, ?) 
+       ON DUPLICATE KEY UPDATE password = VALUES(password)`,
+      ['admin', 'admin@postly.com', hashedPassword, 'admin']
+    );
+    
+    // Create categories
+    const categories = ['Technology', 'Lifestyle', 'Education'];
+    for (const cat of categories) {
+      await require('./config/database').pool.execute(
+        'INSERT IGNORE INTO categories (category_name) VALUES (?)',
+        [cat]
+      );
+    }
+    
+    res.json({
+      success: true,
+      message: 'Database initialized successfully!',
+      credentials: {
+        email: 'admin@postly.com',
+        password: 'admin123'
+      }
+    });
+  } catch (error) {
+    console.error('Setup error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Database setup failed',
+      error: error.message
+    });
+  }
+});
+
 // API route handlers
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
