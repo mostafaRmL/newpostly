@@ -100,48 +100,6 @@ class User {
     );
     return result.affectedRows > 0;
   }
-
-  /**
-   * Get all users (admin only)
-   */
-  static async findAll() {
-    const [rows] = await pool.execute(
-      'SELECT user_id, username, email, role, created_at FROM users ORDER BY created_at DESC'
-    );
-    return rows;
-  }
-
-  /**
-   * Update user role (admin only)
-   */
-  static async updateRole(userId, role) {
-    const [result] = await pool.execute(
-      'UPDATE users SET role = ? WHERE user_id = ?',
-      [role, userId]
-    );
-    return result.affectedRows > 0;
-  }
-
-  /**
-   * Get user statistics (admin only)
-   */
-  static async getStats() {
-    const [totalUsers] = await pool.execute(
-      'SELECT COUNT(*) as total FROM users'
-    );
-    const [adminCount] = await pool.execute(
-      'SELECT COUNT(*) as total FROM users WHERE role = "admin"'
-    );
-    const [userCount] = await pool.execute(
-      'SELECT COUNT(*) as total FROM users WHERE role = "user"'
-    );
-    
-    return {
-      total: totalUsers[0].total,
-      admins: adminCount[0].total,
-      users: userCount[0].total
-    };
-  }
 }
 
 module.exports = User;

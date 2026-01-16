@@ -10,13 +10,7 @@ const Footer = () => {
               src="/logo.png" 
               alt="Postly" 
               className="mb-3"
-              style={{ 
-                height: '120px', 
-                width: 'auto', 
-                objectFit: 'contain',
-                maxWidth: '100%',
-                display: 'block'
-              }}
+              style={{ height: '100px', width: 'auto', objectFit: 'contain' }}
             />
             <p className="text-white-50">
               Share your thoughts, ideas, and stories with the world. 
@@ -24,34 +18,31 @@ const Footer = () => {
             </p>
           </div>
           <div className="col-md-4">
-            <h5 className="text-white mb-3">Connect With Us</h5>
-            <div className="d-flex gap-3 align-items-center">
+            <h5 className="text-white">Connect With Us</h5>
+            <div className="d-flex gap-3">
               <a
                 href="https://facebook.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="social-icon"
-                aria-label="Facebook"
+                className="text-white"
               >
-                <i className="fab fa-facebook-f"></i>
+                <i className="fa fa-facebook fa-2x"></i>
               </a>
               <a
                 href="https://twitter.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="social-icon"
-                aria-label="Twitter"
+                className="text-white"
               >
-                <i className="fab fa-twitter"></i>
+                <i className="fa fa-twitter fa-2x"></i>
               </a>
               <a
                 href="https://instagram.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="social-icon"
-                aria-label="Instagram"
+                className="text-white"
               >
-                <i className="fab fa-instagram"></i>
+                <i className="fa fa-instagram fa-2x"></i>
               </a>
             </div>
           </div>

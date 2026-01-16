@@ -91,8 +91,7 @@ CREATE TABLE IF NOT EXISTS comments (
 INSERT INTO categories (category_name) VALUES
   ('Technology'),
   ('Lifestyle'),
-  ('Education'),
-  ('Politics')
+  ('Education')
 ON DUPLICATE KEY UPDATE category_name = category_name;
 
 -- Insert a default admin user (password: admin123)

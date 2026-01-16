@@ -64,15 +64,15 @@ class Comment {
    * Update a comment
    */
   static async update(commentId, userId, comment, userRole = 'user') {
+    // Build WHERE clause - admins can edit any comment, users can only edit their own
     let query = 'UPDATE comments SET comment = ? WHERE comment_id = ?';
     const params = [comment, commentId];
     
-    // Admins can update any comment
     if (userRole !== 'admin') {
       query += ' AND user_id = ?';
       params.push(userId);
     }
-    
+
     const [result] = await pool.execute(query, params);
     return result.affectedRows > 0;
   }
@@ -92,16 +92,6 @@ class Comment {
 
     const [result] = await pool.execute(query, params);
     return result.affectedRows > 0;
-  }
-
-  /**
-   * Get comment statistics (admin only)
-   */
-  static async getStats() {
-    const [result] = await pool.execute(
-      'SELECT COUNT(*) as total FROM comments'
-    );
-    return result[0];
   }
 }
 

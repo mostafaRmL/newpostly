@@ -23,17 +23,11 @@ const validatePassword = (password) => {
 
 /**
  * Validate username
- * Requirements: 3-50 characters, allows letters, numbers, spaces, and common name characters
+ * Requirements: 3-50 characters, alphanumeric and underscores only
  */
 const validateUsername = (username) => {
-  // Allow letters, numbers, spaces, hyphens, apostrophes, and underscores
-  // Trim to remove leading/trailing spaces before checking length
-  const trimmed = username.trim();
-  if (trimmed.length < 3 || trimmed.length > 50) {
-    return false;
-  }
-  const usernameRegex = /^[a-zA-Z0-9\s\-'_]+$/;
-  return usernameRegex.test(trimmed);
+  const usernameRegex = /^[a-zA-Z0-9_]{3,50}$/;
+  return usernameRegex.test(username);
 };
 
 /**
@@ -62,7 +56,7 @@ const validateRegister = (req, res, next) => {
   if (!validateUsername(username)) {
     return res.status(400).json({
       success: false,
-      message: 'Name must be 3-50 characters and contain only letters, numbers, spaces, hyphens, and apostrophes.'
+      message: 'Username must be 3-50 characters and contain only letters, numbers, and underscores.'
     });
   }
 

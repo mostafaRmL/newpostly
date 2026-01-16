@@ -16,12 +16,9 @@ const User = require('../models/User');
 const register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
-    
-    // Trim username to remove leading/trailing spaces
-    const trimmedUsername = username.trim();
 
     // Check if user already exists
-    const existingUserByEmail = await User.findByEmail(email.trim());
+    const existingUserByEmail = await User.findByEmail(email);
     if (existingUserByEmail) {
       return res.status(400).json({
         success: false,
@@ -29,7 +26,7 @@ const register = async (req, res) => {
       });
     }
 
-    const existingUserByUsername = await User.findByUsername(trimmedUsername);
+    const existingUserByUsername = await User.findByUsername(username);
     if (existingUserByUsername) {
       return res.status(400).json({
         success: false,
@@ -42,11 +39,11 @@ const register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // Create user
-    const userId = await User.create(trimmedUsername, email.trim(), hashedPassword);
+    const userId = await User.create(username, email, hashedPassword);
 
     // Generate JWT token
     const token = jwt.sign(
-      { userId, username: trimmedUsername, email: email.trim(), role: 'user' },
+      { userId, username, email, role: 'user' },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     );
@@ -58,8 +55,8 @@ const register = async (req, res) => {
         token,
         user: {
           userId,
-          username: trimmedUsername,
-          email: email.trim(),
+          username,
+          email,
           role: 'user'
         }
       }

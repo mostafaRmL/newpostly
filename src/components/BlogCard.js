@@ -18,7 +18,7 @@ const BlogCard = ({ post }) => {
     : 'https://via.placeholder.com/800x300?text=Blog+Post';
 
   return (
-    <div className="card main-blog-card mb-5 fade-in">
+    <div className="card main-blog-card mb-5 fade-in">4
       <img
         src={coverSrc}
         className="card-img-top"

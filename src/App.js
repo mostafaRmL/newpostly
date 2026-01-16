@@ -5,11 +5,12 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import Blog from './pages/Blog';
 import BlogDetail from './pages/BlogDetail';
+import EditPost from './pages/EditPost';
+import Admin from './pages/Admin';
 import About from './pages/About';
 import Services from './pages/Services';
 import Contact from './pages/Contact';
 import Auth from './pages/Auth';
-import AdminDashboard from './pages/AdminDashboard';
 import './App.css';
 
 function App() {
@@ -22,11 +23,12 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:id" element={<BlogDetail />} />
+            <Route path="/blog/:id/edit" element={<EditPost />} />
+            <Route path="/admin" element={<Admin />} />
             <Route path="/about" element={<About />} />
             <Route path="/services" element={<Services />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Auth />} />
-            <Route path="/admin" element={<AdminDashboard />} />
             <Route
               path="*"
               element={

@@ -60,29 +60,6 @@
   color: #fff;
 }
 
-.footer .social-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.1);
-  transition: all 0.3s ease;
-  text-decoration: none;
-  color: #fff !important;
-}
-
-.footer .social-icon:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-3px);
-  color: #fff !important;
-}
-
-.footer .social-icon i {
-  font-size: 1.5rem;
-}
-
 .fade-in {
   animation: fadeInUp 0.4s ease;
 }

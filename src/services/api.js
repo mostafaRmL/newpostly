@@ -223,63 +223,31 @@ export const apiService = {
   },
 
   // ============================================
-  // Admin APIs
+  // Like APIs
   // ============================================
 
   /**
-   * Get all users (admin only)
+   * Toggle like on a post (requires authentication)
    */
-  getAllUsers: async () => {
-    const response = await api.get('/admin/users');
-    return response.data?.users || [];
-  },
-
-  /**
-   * Get user by ID (admin only)
-   */
-  getUserById: async (userId) => {
-    const response = await api.get(`/admin/users/${userId}`);
-    return response.data?.user;
-  },
-
-  /**
-   * Update user (admin only)
-   */
-  updateUser: async (userId, userData) => {
-    const response = await api.put(`/admin/users/${userId}`, userData);
-    return response.data?.user;
-  },
-
-  /**
-   * Delete user (admin only)
-   */
-  deleteUser: async (userId) => {
-    return await api.delete(`/admin/users/${userId}`);
-  },
-
-  /**
-   * Delete any post (admin only)
-   */
-  adminDeletePost: async (postId) => {
-    return await api.delete(`/admin/posts/${postId}`);
-  },
-
-  /**
-   * Delete any comment (admin only)
-   */
-  adminDeleteComment: async (commentId) => {
-    return await api.delete(`/admin/comments/${commentId}`);
-  },
-
-  /**
-   * Get dashboard statistics (admin only)
-   */
-  getAdminStats: async () => {
-    const response = await api.get('/admin/stats');
+  toggleLike: async (postId) => {
+    const response = await api.post(`/posts/${postId}/like`);
     return response.data;
   },
-};
 
-// Export as default for backward compatibility
-export default apiService;
+  /**
+   * Check if current user has liked a post (requires authentication)
+   */
+  checkLike: async (postId) => {
+    const response = await api.get(`/posts/${postId}/like`);
+    return response.data?.liked || false;
+  },
+
+  /**
+   * Get all users who liked a post
+   */
+  getLikers: async (postId) => {
+    const response = await api.get(`/posts/${postId}/likers`);
+    return response.data?.likers || [];
+  },
+};
 

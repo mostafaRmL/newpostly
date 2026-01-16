@@ -4,8 +4,7 @@ import { apiService } from '../services/api';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -13,30 +12,42 @@ const Navbar = () => {
     return location.pathname === path ? 'active' : '';
   };
 
-  // Check if user is logged in
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const userData = localStorage.getItem('user');
-    
-    if (token && userData) {
-      setIsLoggedIn(true);
-      try {
-        setUser(JSON.parse(userData));
-      } catch (e) {
-        console.error('Error parsing user data:', e);
+    // Function to update user state
+    const updateUser = () => {
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        try {
+          setCurrentUser(JSON.parse(userStr));
+        } catch (e) {
+          console.error('Error parsing user data:', e);
+          setCurrentUser(null);
+        }
+      } else {
+        setCurrentUser(null);
       }
-    } else {
-      setIsLoggedIn(false);
-      setUser(null);
-    }
-  }, [location.pathname]); // Re-check when route changes
+    };
+
+    // Update user on mount and when location changes (e.g., after login)
+    updateUser();
+
+    // Listen for storage changes (when user logs in/out in another tab)
+    const handleStorageChange = () => {
+      updateUser();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [location]); // Re-run when location changes
 
   const handleLogout = () => {
     apiService.logout();
-    setIsLoggedIn(false);
-    setUser(null);
-    setIsOpen(false);
+    setCurrentUser(null);
     navigate('/');
+    setIsOpen(false);
   };
 
   return (
@@ -104,38 +115,57 @@ const Navbar = () => {
                 Contact
               </Link>
             </li>
-            {isLoggedIn && user?.role === 'admin' && (
-              <li className="nav-item">
-                <Link
-                  className={`nav-link ${isActive('/admin')}`}
-                  to="/admin"
-                  onClick={() => setIsOpen(false)}
-                  style={{ color: '#ffd700', fontWeight: '600' }}
-                >
-                  <i className="fas fa-shield-alt me-1"></i>
-                  Admin
-                </Link>
-              </li>
-            )}
           </ul>
           <div className="d-flex gap-2 align-items-center">
-            {isLoggedIn ? (
+            {currentUser ? (
               <>
-                <span className="text-light me-2 d-none d-md-inline" style={{ fontSize: '0.9rem' }}>
-                  Welcome, {user?.username || 'User'}
-                </span>
-                <button
-                  className="btn btn-outline-light"
-                  onClick={handleLogout}
-                  style={{ 
-                    padding: '0.5rem 1.5rem',
-                    fontWeight: '500',
-                    borderRadius: '0.5rem',
-                    whiteSpace: 'nowrap'
-                  }}
-                >
-                  Logout
-                </button>
+                {currentUser.role === 'admin' && (
+                  <Link
+                    to="/admin"
+                    className="btn btn-warning"
+                    onClick={() => setIsOpen(false)}
+                    style={{ 
+                      padding: '0.5rem 1.5rem',
+                      fontWeight: '500',
+                      borderRadius: '0.5rem'
+                    }}
+                  >
+                    <i className="fas fa-cog me-1"></i> Admin
+                  </Link>
+                )}
+                <div className="dropdown">
+                  <button
+                    className="btn btn-outline-light dropdown-toggle"
+                    type="button"
+                    id="userMenu"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    style={{ 
+                      padding: '0.5rem 1.5rem',
+                      fontWeight: '500',
+                      borderRadius: '0.5rem'
+                    }}
+                  >
+                    <i className="fas fa-user me-1"></i> {currentUser.username}
+                  </button>
+                  <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                    <li>
+                      <span className="dropdown-item-text">
+                        <small className="text-muted">Logged in as</small><br />
+                        <strong>{currentUser.email}</strong>
+                      </span>
+                    </li>
+                    <li><hr className="dropdown-divider" /></li>
+                    <li>
+                      <button
+                        className="dropdown-item"
+                        onClick={handleLogout}
+                      >
+                        <i className="fas fa-sign-out-alt me-2"></i> Logout
+                      </button>
+                    </li>
+                  </ul>
+                </div>
               </>
             ) : (
               <Link
@@ -145,8 +175,7 @@ const Navbar = () => {
                 style={{ 
                   padding: '0.5rem 1.5rem',
                   fontWeight: '500',
-                  borderRadius: '0.5rem',
-                  whiteSpace: 'nowrap'
+                  borderRadius: '0.5rem'
                 }}
               >
                 Login / Sign Up

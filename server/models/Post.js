@@ -136,16 +136,20 @@ class Post {
       return false;
     }
 
-    // Add WHERE clause - admins can update any post
+    // Build WHERE clause - admins can edit any post, users can only edit their own
+    let whereClause = 'WHERE post_id = ?';
     values.push(postId);
-    let query = `UPDATE posts SET ${fields.join(', ')} WHERE post_id = ?`;
     
     if (userRole !== 'admin') {
-      query += ' AND user_id = ?';
+      whereClause += ' AND user_id = ?';
       values.push(userId);
     }
 
-    const [result] = await pool.execute(query, values);
+    const [result] = await pool.execute(
+      `UPDATE posts SET ${fields.join(', ')} ${whereClause}`,
+      values
+    );
+    
     return result.affectedRows > 0;
   }
 
@@ -175,16 +179,6 @@ class Post {
       [postId]
     );
     return result.affectedRows > 0;
-  }
-
-  /**
-   * Get post statistics (admin only)
-   */
-  static async getStats() {
-    const [result] = await pool.execute(
-      'SELECT COUNT(*) as total FROM posts'
-    );
-    return result[0];
   }
 }
 

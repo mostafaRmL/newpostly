@@ -84,7 +84,7 @@ const updateComment = async (req, res) => {
   try {
     const commentId = req.params.id;
     const userId = req.user.userId;
-    const userRole = req.user.role;
+    const userRole = req.user.role || 'user';
     const { comment } = req.body;
 
     const updated = await Comment.update(commentId, userId, comment, userRole);

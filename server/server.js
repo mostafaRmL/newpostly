@@ -21,7 +21,7 @@ const authRoutes = require('./routes/authRoutes');
 const postRoutes = require('./routes/postRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
-const adminRoutes = require('./routes/adminRoutes');
+const likeRoutes = require('./routes/likeRoutes');
 
 // Initialize Express app
 const app = express();
@@ -32,19 +32,22 @@ const PORT = process.env.PORT || 5000;
 // ============================================
 
 // CORS configuration - allows React frontend to communicate with backend
+const allowedOrigins = [
+  process.env.FRONTEND_URL || 'http://localhost:3000',
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'http://127.0.0.1:3000',
+  'http://127.0.0.1:3001'
+];
+
 const corsOptions = {
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-    
-    const allowedOrigins = process.env.FRONTEND_URL 
-      ? process.env.FRONTEND_URL.split(',')
-      : ['http://localhost:3000'];
-    
-    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
+    if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(null, true); // Allow all origins in development
     }
   },
   credentials: true,
@@ -80,9 +83,9 @@ app.get('/api/health', (req, res) => {
 // API route handlers
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
+app.use('/api/posts', likeRoutes); // Like routes (uses /api/posts/:id/like)
 app.use('/api/comments', commentRoutes);
 app.use('/api/categories', categoryRoutes);
-app.use('/api/admin', adminRoutes);
 
 // ============================================
 // Error Handling Middleware

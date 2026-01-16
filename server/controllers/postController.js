@@ -99,7 +99,7 @@ const updatePost = async (req, res) => {
   try {
     const postId = req.params.id;
     const userId = req.user.userId;
-    const userRole = req.user.role;
+    const userRole = req.user.role || 'user';
     const updates = req.body;
 
     const updated = await Post.update(postId, userId, updates, userRole);
