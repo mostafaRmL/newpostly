@@ -33,21 +33,28 @@ const PORT = process.env.PORT || 5000;
 
 // CORS configuration - allows React frontend to communicate with backend
 const allowedOrigins = [
-  process.env.FRONTEND_URL || 'http://localhost:3000',
+  process.env.FRONTEND_URL,
   'http://localhost:3000',
   'http://localhost:3001',
   'http://127.0.0.1:3000',
   'http://127.0.0.1:3001'
-];
+].filter(Boolean); // Remove undefined values
 
 const corsOptions = {
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
+    
+    // In production, check against allowed origins
+    if (process.env.NODE_ENV === 'production') {
+      if (allowedOrigins.some(allowed => origin.startsWith(allowed) || origin === allowed)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
     } else {
-      callback(null, true); // Allow all origins in development
+      // In development, allow all origins
+      callback(null, true);
     }
   },
   credentials: true,
