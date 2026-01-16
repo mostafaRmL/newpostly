@@ -17,17 +17,35 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Create connection pool for better performance and connection management
-const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'postly_db',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-  enableKeepAlive: true,
-  keepAliveInitialDelay: 0
-});
+// Support both Railway's MYSQL_URL and individual connection parameters
+let pool;
+
+if (process.env.MYSQL_URL || process.env.DATABASE_URL) {
+  // Use Railway's connection URL if available
+  const connectionUrl = process.env.MYSQL_URL || process.env.DATABASE_URL;
+  pool = mysql.createPool({
+    uri: connectionUrl,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
+    enableKeepAlive: true,
+    keepAliveInitialDelay: 0
+  });
+  console.log('✅ Using DATABASE_URL for MySQL connection');
+} else {
+  // Fallback to individual parameters for local development
+  pool = mysql.createPool({
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'postly_db',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
+    enableKeepAlive: true,
+    keepAliveInitialDelay: 0
+  });
+}
 
 // Test database connection
 const testConnection = async () => {
